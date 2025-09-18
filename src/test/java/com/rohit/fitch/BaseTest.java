@@ -21,7 +21,8 @@ public class BaseTest {
     public void setUp() throws IOException {
         Properties props = new Properties();
         try (InputStream in = BaseTest.class.getClassLoader().getResourceAsStream("config.properties")) {
-            if (in != null) props.load(in);
+            if (in != null)
+                props.load(in);
         }
 
         baseUrl = getenvOrDefault("BASE_URL", props.getProperty("baseUrl", "https://www.fitchratings.com"));
@@ -48,9 +49,11 @@ public class BaseTest {
 
     private static String getenvOrDefault(String key, String def) {
         String val = System.getProperty(key);
-        if (val != null && !val.isBlank()) return val;
+        if (val != null && !val.isBlank())
+            return val;
         val = System.getenv(key);
-        if (val != null && !val.isBlank()) return val;
+        if (val != null && !val.isBlank())
+            return val;
         return def;
     }
 }
