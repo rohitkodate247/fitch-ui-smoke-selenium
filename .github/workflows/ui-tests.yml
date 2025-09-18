@@ -29,3 +29,25 @@ jobs:
         env:
           BASE_URL: https://www.fitchratings.com
         run: mvn -B -q test
+
+      # Print test summaries directly in the Actions log
+      - name: Show Surefire summary
+        if: always()
+        run: |
+          echo "==== Surefire TXT summaries ===="
+          if [ -d target/surefire-reports ]; then
+            find target/surefire-reports -maxdepth 1 -name "*.txt" -print -exec sed -n '1,200p' {} \;
+            echo "==== JUnit XML files ===="
+            ls -1 target/surefire-reports/*.xml || true
+          else
+            echo "No surefire-reports directory found."
+          fi
+
+      # Upload full reports as an artifact you can download from the run
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          if-no-files-found: warn
