@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.rohit.fitch</groupId>
@@ -10,19 +9,28 @@
   <name>Fitch UI Smoke - Selenium</name>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <junit.jupiter.version>5.10.2</junit.jupiter.version>
-    <selenium.version>4.22.0</selenium.version>
+    <selenium.version>4.24.0</selenium.version>
     <surefire.version>3.2.5</surefire.version>
   </properties>
 
   <dependencies>
-    <!-- Selenium (includes selenium-manager) -->
+    <!-- Selenium (includes Selenium Manager; no manual chromedriver needed) -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
       <version>${selenium.version}</version>
+    </dependency>
+
+    <!-- Match the runner’s Chrome major version (140) to silence CDP warnings -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-devtools-v140</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- JUnit 5 -->
@@ -32,18 +40,27 @@
       <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- WebDriver-friendly wait utils (optional, using Selenium waits anyway) -->
   </dependencies>
 
   <build>
     <plugins>
-      <!-- JUnit 5 -->
+      <!-- (Optional) Explicit compiler plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+
+      <!-- JUnit 5 test runner -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.version}</version>
         <configuration>
+          <useModulePath>false</useModulePath>
           <includes>
             <include>**/*Tests.java</include>
           </includes>
