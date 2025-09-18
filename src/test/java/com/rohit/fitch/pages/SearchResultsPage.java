@@ -20,7 +20,8 @@ public class SearchResultsPage {
         // Typical indicators: results container, result list, or title change
         try {
             wait.until(d -> d.getTitle() != null && d.getTitle().toLowerCase().contains("search"));
-        } catch (TimeoutException ignored) {}
+        } catch (TimeoutException ignored) {
+        }
         try {
             // Try a few candidate containers/items
             By[] candidates = new By[] {
@@ -34,7 +35,8 @@ public class SearchResultsPage {
                     return true;
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         // Fallback: any anchor list on page
         return !driver.findElements(By.cssSelector("a")).isEmpty();
     }
