@@ -12,6 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Pin Chrome so CDP == 139 (matches selenium-devtools-v139 in pom.xml)
+      - name: Set up Chrome 139
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: '139'
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -21,6 +27,5 @@ jobs:
 
       - name: Run tests (headless Chrome)
         env:
-          # Override if you need to point somewhere else
           BASE_URL: https://www.fitchratings.com
         run: mvn -B -q test
