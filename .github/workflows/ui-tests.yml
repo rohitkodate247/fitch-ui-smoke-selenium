@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Pin Chrome so CDP == 139 (matches selenium-devtools-v139 in pom.xml)
+      # Pin Chrome so CDP == 139 (matches selenium-devtools-v139 in pom.xml) 24
       - name: Set up Chrome 139
         uses: browser-actions/setup-chrome@v1
         with:
