@@ -43,7 +43,50 @@ jobs:
             echo "No surefire-reports directory found."
           fi
 
-      # Upload full reports as an artifact you can download from the run
+      # Compute Passed / Failed / Errors / Skipped / Total and print + add to Job Summary
+      - name: Compute test summary
+        if: always()
+        run: |
+          set -e
+          if [ ! -d target/surefire-reports ]; then
+            echo "No surefire-reports directory found."
+            exit 0
+          fi
+
+          RUN=0; FAIL=0; ERR=0; SKIP=0
+          # Sum across all test set TXT files (handles multiple classes)
+          for f in target/surefire-reports/*.txt; do
+            LINE=$(grep -E "Tests run:" "$f" | tail -n1 || true)
+            [ -z "$LINE" ] && continue
+            r=$(echo "$LINE" | grep -oE 'Tests run: *[0-9]+' | grep -oE '[0-9]+')
+            f1=$(echo "$LINE" | grep -oE 'Failures: *[0-9]+' | grep -oE '[0-9]+')
+            e1=$(echo "$LINE" | grep -oE 'Errors: *[0-9]+' | grep -oE '[0-9]+')
+            s1=$(echo "$LINE" | grep -oE 'Skipped: *[0-9]+' | grep -oE '[0-9]+')
+            RUN=$((RUN + r))
+            FAIL=$((FAIL + f1))
+            ERR=$((ERR + e1))
+            SKIP=$((SKIP + s1))
+          done
+          PASSED=$((RUN - FAIL - ERR - SKIP))
+
+          echo "==== Parsed Test Totals ===="
+          echo "Passed:  ${PASSED}"
+          echo "Failures:${FAIL}"
+          echo "Errors:  ${ERR}"
+          echo "Skipped: ${SKIP}"
+          echo "Total:   ${RUN}"
+
+          {
+            echo "### UI Test Summary"
+            echo ""
+            echo "- ✅ Passed: **${PASSED}**"
+            echo "- ❌ Failures: **${FAIL}**"
+            echo "- ⚠️ Errors: **${ERR}**"
+            echo "- ⏭️ Skipped: **${SKIP}**"
+            echo "- 📊 Total: **${RUN}**"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Upload full reports as an artifact
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
